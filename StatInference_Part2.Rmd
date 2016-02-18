@@ -1,0 +1,82 @@
+
+# Statistical Inference: Part 2
+Basic inferential data analysis
+==========================================
+#### Atit Doctor
+##### February 18, 2016
+
+
+## Load necessary packages
+```{r}
+library(ggplot2)
+```
+
+In this report we will analyse the ToothGrowth data in the R data sets package. The data is set of 60 observations, length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1 and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).
+
+## Loading the data
+```{r}
+data(ToothGrowth)
+str(ToothGrowth)
+head(ToothGrowth)
+```
+
+## Data Summary
+```{r}
+summary(ToothGrowth)
+```
+
+## Correct Variables
+```{r}
+ToothGrowth$dose<-as.factor(ToothGrowth$dose)
+```
+
+
+## Exploratory Analysis
+Verify the mean of the len variable by supply method and creating the corresponding histogram
+```{r}
+MeanSupp = split(ToothGrowth$len, ToothGrowth$supp)
+sapply(MeanSupp, mean)
+
+ggplot(aes(x=supp, y=len), data=ToothGrowth) + geom_boxplot(aes(fill=supp))+ 
+        xlab("Supplement type") +ylab("Tooth length") 
+```
+
+
+## Checking the effect of vitamin C dose on tooth length.
+```{r}
+MeanDose = split(ToothGrowth$len, ToothGrowth$dose)
+sapply(MeanDose, mean)
+
+ggplot(aes(x=dose, y=len), data=ToothGrowth) + geom_boxplot(aes(fill=dose)) + 
+        xlab("Dose in miligrams") +ylab("Tooth length") 
+```
+
+
+## Inferential Statistics
+Do the teeth length of the guinea pigs depends on delivery methods? 
+
+A t-test for the difference will be made to test this claim.
+```{r}
+len<-ToothGrowth$len
+supp<-ToothGrowth$supp
+dose<-ToothGrowth$dose
+
+sapply(MeanSupp, var)
+
+t.test(len[supp=="OJ"], len[supp=="VC"], paired = FALSE, var.equal = FALSE)
+```
+
+The p-value of this test was 0.0606, which is very close to the significance level of 5%. 
+
+This could be interpreted as a lack of enough evidence to reject the null hypothesis, however it is very important to account that the 0.05 value of significance is only a convenience value and not the exact value.Furthermore, the confidence interval of the test contains zero (0)
+
+
+Now we will test the tooth length of the group with vitamin C dosage.
+
+```{r}
+t.test(len[dose==2], len[dose==1], paired = FALSE, var.equal = TRUE)
+```
+
+The p-value of this test is close to 0 (0.00001811), which provides requisite evidence that we can reject the null hypothesis. Therefore we can assume that the means of dosage change from 1mg to 2mg creates an positive effect on teeth length. 
+
+After the above analysis we can conclude that supplement type has no effect on teeth growth, and increasing the dose level leads to increased teeth growth.
