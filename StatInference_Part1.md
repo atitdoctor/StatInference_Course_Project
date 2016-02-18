@@ -1,6 +1,4 @@
----
-output: html_document
----
+
 # Statistical Inference: Part 1
 Simulation
 ==========================================
